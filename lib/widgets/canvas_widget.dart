@@ -26,7 +26,8 @@ class _CanvasWidgetState extends State<CanvasWidget> {
   Map<String, double>? _originalAnchors;
 
   // Snap to grid helper - snaps to 5% intervals (0.05)
-  double _snapToGrid(double value) {
+  double _snapToGrid(double value, bool snapEnabled) {
+    if (!snapEnabled) return value; // Skip snapping if disabled
     const gridInterval = 0.05; // 5% grid
     return (value / gridInterval).round() * gridInterval;
   }
@@ -217,11 +218,11 @@ class _CanvasWidgetState extends State<CanvasWidget> {
                 double newMinY = (_originalAnchors!['minY']! + deltaY).clamp(0.0, 1.0);
                 double newMaxY = (_originalAnchors!['maxY']! + deltaY).clamp(0.0, 1.0);
 
-                // Snap to grid
-                newMinX = _snapToGrid(newMinX);
-                newMaxX = _snapToGrid(newMaxX);
-                newMinY = _snapToGrid(newMinY);
-                newMaxY = _snapToGrid(newMaxY);
+                // Snap to grid if enabled
+                newMinX = _snapToGrid(newMinX, state.snapToGrid);
+                newMaxX = _snapToGrid(newMaxX, state.snapToGrid);
+                newMinY = _snapToGrid(newMinY, state.snapToGrid);
+                newMaxY = _snapToGrid(newMaxY, state.snapToGrid);
 
                 // Ensure element stays within bounds
                 if (newMinX >= 0 && newMaxX <= 1) {
@@ -294,23 +295,23 @@ class _CanvasWidgetState extends State<CanvasWidget> {
             if (alignment == Alignment.bottomRight) {
               double newMaxX = (_originalAnchors!['maxX']! + dx).clamp(_originalAnchors!['minX']! + 0.05, 1.0);
               double newMinY = (_originalAnchors!['minY']! + dy).clamp(0.0, _originalAnchors!['maxY']! - 0.05);
-              element.anchorMaxX = _snapToGrid(newMaxX);
-              element.anchorMinY = _snapToGrid(newMinY);
+              element.anchorMaxX = _snapToGrid(newMaxX, state.snapToGrid);
+              element.anchorMinY = _snapToGrid(newMinY, state.snapToGrid);
             } else if (alignment == Alignment.topRight) {
               double newMaxX = (_originalAnchors!['maxX']! + dx).clamp(_originalAnchors!['minX']! + 0.05, 1.0);
               double newMaxY = (_originalAnchors!['maxY']! + dy).clamp(_originalAnchors!['minY']! + 0.05, 1.0);
-              element.anchorMaxX = _snapToGrid(newMaxX);
-              element.anchorMaxY = _snapToGrid(newMaxY);
+              element.anchorMaxX = _snapToGrid(newMaxX, state.snapToGrid);
+              element.anchorMaxY = _snapToGrid(newMaxY, state.snapToGrid);
             } else if (alignment == Alignment.bottomLeft) {
               double newMinX = (_originalAnchors!['minX']! + dx).clamp(0.0, _originalAnchors!['maxX']! - 0.05);
               double newMinY = (_originalAnchors!['minY']! + dy).clamp(0.0, _originalAnchors!['maxY']! - 0.05);
-              element.anchorMinX = _snapToGrid(newMinX);
-              element.anchorMinY = _snapToGrid(newMinY);
+              element.anchorMinX = _snapToGrid(newMinX, state.snapToGrid);
+              element.anchorMinY = _snapToGrid(newMinY, state.snapToGrid);
             } else if (alignment == Alignment.topLeft) {
               double newMinX = (_originalAnchors!['minX']! + dx).clamp(0.0, _originalAnchors!['maxX']! - 0.05);
               double newMaxY = (_originalAnchors!['maxY']! + dy).clamp(_originalAnchors!['minY']! + 0.05, 1.0);
-              element.anchorMinX = _snapToGrid(newMinX);
-              element.anchorMaxY = _snapToGrid(newMaxY);
+              element.anchorMinX = _snapToGrid(newMinX, state.snapToGrid);
+              element.anchorMaxY = _snapToGrid(newMaxY, state.snapToGrid);
             }
 
             state.updateElement(element.id, element.clone());

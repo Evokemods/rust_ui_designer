@@ -40,6 +40,19 @@ class DesignerScreen extends StatelessWidget {
             },
           ),
           const SizedBox(width: 10),
+          Consumer<DesignerState>(
+            builder: (context, state, child) {
+              return IconButton(
+                icon: Icon(
+                  state.snapToGrid ? Icons.grid_on : Icons.grid_off,
+                ),
+                tooltip: state.snapToGrid ? 'Snap to Grid: ON' : 'Snap to Grid: OFF',
+                onPressed: () => state.toggleSnapToGrid(),
+                color: state.snapToGrid ? Colors.green : Colors.grey,
+              );
+            },
+          ),
+          const SizedBox(width: 10),
           IconButton(
             icon: const Icon(Icons.file_open),
             tooltip: 'Open Project',

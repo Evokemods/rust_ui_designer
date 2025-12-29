@@ -16,6 +16,7 @@ class DesignerState with ChangeNotifier {
   String _mainUiName = 'MyPlugin_Main';
   bool _showRustBackground = false;
   String? _backgroundImageUrl;
+  bool _snapToGrid = true; // Default: snap enabled
 
   DesignerState() {
     // Create initial page
@@ -34,6 +35,7 @@ class DesignerState with ChangeNotifier {
   String get mainUiName => _mainUiName;
   bool get showRustBackground => _showRustBackground;
   String? get backgroundImageUrl => _backgroundImageUrl;
+  bool get snapToGrid => _snapToGrid;
 
   UiElement? get selectedElement {
     if (_selectedElementId == null) return null;
@@ -138,10 +140,16 @@ class DesignerState with ChangeNotifier {
     notifyListeners();
   }
 
+  void toggleSnapToGrid() {
+    _snapToGrid = !_snapToGrid;
+    notifyListeners();
+  }
+
   void loadFromJson(Map<String, dynamic> json) {
     _projectName = json['projectName'] ?? 'MyPlugin';
     _mainUiName = json['mainUiName'] ?? 'MyPlugin_Main';
     _backgroundImageUrl = json['backgroundImageUrl'];
+    _snapToGrid = json['snapToGrid'] ?? true; // Default to true if not in file
     _pages.clear();
 
     // Support both old format (single page) and new format (multiple pages)
@@ -204,6 +212,7 @@ class DesignerState with ChangeNotifier {
       'projectName': _projectName,
       'mainUiName': _mainUiName,
       'backgroundImageUrl': _backgroundImageUrl,
+      'snapToGrid': _snapToGrid,
       'pages': _pages.map((p) => p.toJson()).toList(),
     };
   }

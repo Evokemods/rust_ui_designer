@@ -10,7 +10,9 @@ import '../models/label_element.dart';
 import '../models/image_element.dart';
 import '../models/image_button_element.dart';
 import '../models/ui_colors_presets.dart';
+import '../models/anchor_preset.dart';
 import '../utils/color_utils.dart';
+import 'anchor_selector_widget.dart';
 
 class PropertiesPanelWidget extends StatelessWidget {
   const PropertiesPanelWidget({super.key});
@@ -64,6 +66,33 @@ class PropertiesPanelWidget extends StatelessWidget {
 
     // Common position properties
     widgets.add(_buildSectionTitle('Position'));
+
+    // Anchor Preset Selector
+    widgets.add(Padding(
+      padding: const EdgeInsets.only(bottom: 16),
+      child: AnchorSelectorWidget(
+        currentMinX: element.anchorMinX,
+        currentMinY: element.anchorMinY,
+        currentMaxX: element.anchorMaxX,
+        currentMaxY: element.anchorMaxY,
+        onPresetSelected: (preset) {
+          // Apply preset by moving element to the anchor position
+          final newAnchors = AnchorPresets.applyPresetMovingElement(
+            newPreset: preset,
+            defaultSize: 0.2, // 20% default size
+          );
+
+          element.anchorMinX = newAnchors['minX']!;
+          element.anchorMinY = newAnchors['minY']!;
+          element.anchorMaxX = newAnchors['maxX']!;
+          element.anchorMaxY = newAnchors['maxY']!;
+          state.updateElement(element.id, element.clone());
+        },
+      ),
+    ));
+
+    // Manual anchor adjustment fields (for fine-tuning)
+    widgets.add(_buildSectionTitle('Fine-Tune Position'));
     widgets.add(_buildNumberField(
       'Anchor Min X',
       element.anchorMinX,
